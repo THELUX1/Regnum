@@ -9,8 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel+Decorative&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="menu-container">
-        
+    <div class="menu-container">        
         <!-- Menú principal estilo taberna -->
         <div class="menu-buttons">
             <button id="new-game"><i class="fas fa-scroll"></i> Nueva Crónica</button>
@@ -106,7 +105,19 @@
     <audio id="bg-music" loop>
         <source src="sounds/medieval-ambient.mp3" type="audio/mpeg">
     </audio>
-
+    <script>
+    // Al tocar la pantalla, se solicita pantalla completa
+    document.addEventListener("click", () => {
+      const el = document.documentElement;
+      if (el.requestFullscreen) {
+        el.requestFullscreen();
+      } else if (el.webkitRequestFullscreen) {
+        el.webkitRequestFullscreen();
+      } else if (el.msRequestFullscreen) {
+        el.msRequestFullscreen();
+      }
+    });
+  </script>
     <script src="script.js"></script>
 </body>
 </html>
