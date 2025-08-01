@@ -136,6 +136,7 @@ button i {
 .options-container {
     display: flex;
     height: calc(100% - 70px);
+    background-color: #5c2a00b1;
 }
 
 /* Columna izquierda - estilo vitrales */
