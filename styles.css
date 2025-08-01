@@ -91,7 +91,7 @@ button i {
     max-width: 800px; /* Ancho máximo */
     height: 80vh; /* Altura relativa a la pantalla */
     max-height: 600px; /* Altura máxima */
-    background: url('../img/wood-panel.jpg');
+    background: #472000eb;
     border: 12px double #5a3a1f;
     border-image: url('../img/border-pattern.png') 12 round;
     display: none;
