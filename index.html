@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crónicas Medievales</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel+Decorative&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="menu-container">
+        
+        <!-- Menú principal estilo taberna -->
+        <div class="menu-buttons">
+            <button id="new-game"><i class="fas fa-scroll"></i> Nueva Crónica</button>
+            <button id="continue"><i class="fas fa-book"></i> Continuar Relato</button>
+            <button id="options-btn"><i class="fas fa-crown"></i> Consejo Real</button>
+            <button id="exit"><i class="fas fa-door-open"></i> Salir del Reino</button>
+        </div>
+        
+        <!-- Menú de opciones estilo salón real -->
+        <div class="options-menu" id="options-menu">
+            <div class="options-header">
+                <h2><i class="fas fa-chess-rook"></i> SALÓN DEL REY</h2>
+                <button id="close-options"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <div class="options-container">
+                <!-- Columna izquierda - Botones estilo vitral -->
+                <div class="options-tabs">
+                    <button class="tab-btn active" data-tab="audio">
+                        <i class="fas fa-harp"></i> Juglares
+                    </button>
+                    <button class="tab-btn" data-tab="graphics">
+                        <i class="fas fa-chess-board"></i> Tablero
+                    </button>
+                    <button class="tab-btn" data-tab="save">
+                        <i class="fas fa-feather-alt"></i> Escribir
+                    </button>
+                    <button class="tab-btn" data-tab="load">
+                        <i class="fas fa-book-open"></i> Leer
+                    </button>
+                </div>
+                
+                <!-- Columna derecha - Contenido estilo pergamino -->
+                <div class="tab-content-container">
+                    <!-- Pestaña Audio -->
+                    <div class="tab-content active" id="audio-tab">
+                        <h3><i class="fas fa-harp"></i> MENESTERES</h3>
+                        <div class="option-item">
+                            <label><i class="fas fa-music"></i> Volumen de música</label>
+                            <input type="range" id="music-volume" min="0" max="1" step="0.1" value="0.7">
+                        </div>
+                        <div class="option-item">
+                            <label><i class="fas fa-horse"></i> Sonidos del Reino</label>
+                            <input type="range" id="sfx-volume" min="0" max="1" step="0.1" value="0.9">
+                        </div>
+                    </div>
+                    
+                    <!-- Pestaña Imagen -->
+                    <div class="tab-content" id="graphics-tab">
+                        <h3><i class="fas fa-chess-board"></i> VISUALES REALES</h3>
+                        <div class="option-item">
+                            <label><i class="fas fa-gem"></i>Calidad de imagen</label>
+                            <select id="resolution">
+                                <option value="high">Alta (Corte Real)</option>
+                                <option value="medium">Media (Ciudad)</option>
+                                <option value="low">Baja (Aldea)</option>
+                            </select>
+                        </div>
+                        <div class="option-item">
+                            <label><i class="fas fa-chess-rook"></i> Modo Castillo</label>
+                            <select id="display-mode">
+                                <option value="fullscreen">Gran Salón</option>
+                                <option value="windowed">Torreón</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Pestaña Guardar -->
+                    <div class="tab-content" id="save-tab">
+                        <h3><i class="fas fa-feather-alt"></i> ARCHIVOS REALES</h3>
+                        <div class="save-slots">
+                            <button class="save-slot" data-slot="1"><i class="fas fa-scroll"></i> Tomo I</button>
+                            <button class="save-slot" data-slot="2"><i class="fas fa-scroll"></i> Tomo II</button>
+                            <button class="save-slot" data-slot="3"><i class="fas fa-scroll"></i> Tomo III</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Pestaña Cargar -->
+                    <div class="tab-content" id="load-tab">
+                        <h3><i class="fas fa-book-open"></i> ARCHIVOS ANTIGUOS</h3>
+                        <div class="save-slots">
+                            <button class="load-slot" data-slot="1"><i class="fas fa-book-dead"></i> Crónica I</button>
+                            <button class="load-slot" data-slot="2"><i class="fas fa-book-dead"></i> Crónica II</button>
+                            <button class="load-slot" data-slot="3"><i class="fas fa-book-dead"></i> Crónica III</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio ambiental medieval -->
+    <audio id="bg-music" loop>
+        <source src="sounds/medieval-ambient.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="script.js"></script>
+</body>
+</html>
