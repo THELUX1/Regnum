@@ -15,6 +15,68 @@ const warningModal = document.getElementById("warning-modal");
 const acceptWarningBtn = document.getElementById("accept-warning");
 const declineWarningBtn = document.getElementById("decline-warning");
 
+// Sistema de sonidos mejorado
+const soundSystem = {
+    sounds: {
+        button: new Audio("sounds/button-click.mp3"),
+        tab: new Audio("sounds/page-turn.mp3"),
+        open: new Audio("sounds/door-open.mp3"),
+        close: new Audio("sounds/door-close.mp3"),
+        error: new Audio("sounds/error.mp3")
+    },
+    
+    // Precarga todos los sonidos
+    preloadSounds: function() {
+        for (const key in this.sounds) {
+            if (this.sounds.hasOwnProperty(key)) {
+                this.sounds[key].preload = "auto";
+                this.sounds[key].load();
+                // Crear buffers para sonidos rápidos
+                if (key === "button" || key === "tab") {
+                    this.sounds[key].addEventListener('canplaythrough', () => {
+                        // Crear copias para sonidos rápidos
+                        this[`${key}Buffer`] = this.sounds[key].cloneNode();
+                    });
+                }
+            }
+        }
+    },
+    
+    // Reproduce sonido con respuesta instantánea
+    play: function(soundName, volume = 1) {
+        try {
+            // Usar buffer para sonidos que necesitan respuesta rápida
+            const sound = (soundName === "button" && this.buttonBuffer) ? 
+                this.buttonBuffer : 
+                (soundName === "tab" && this.tabBuffer) ? 
+                this.tabBuffer : 
+                this.sounds[soundName];
+            
+            if (!sound) return;
+            
+            sound.volume = volume;
+            sound.currentTime = 0;
+            
+            // Intenta reproducir inmediatamente
+            const promise = sound.play();
+            
+            // Maneja posibles errores de reproducción
+            if (promise !== undefined) {
+                promise.catch(error => {
+                    console.log("Fallback to normal sound playback");
+                    this.sounds[soundName].currentTime = 0;
+                    this.sounds[soundName].play();
+                });
+            }
+        } catch (e) {
+            console.log("Sound play error:", e);
+        }
+    }
+};
+
+// Precargar sonidos al iniciar
+soundSystem.preloadSounds();
+
 // Estado del juego
 let gameState = {
     currentScene: 0,
@@ -24,13 +86,9 @@ let gameState = {
 };
 
 // ==================== SISTEMA DE MENSAJES ==================== //
-/**
- * Muestra un mensaje estilo medieval
- * @param {string} title - Título del mensaje
- * @param {string} message - Contenido del mensaje
- * @param {boolean} isError - Si es un mensaje de error
- */
 function showMedievalMessage(title, message, isError = false) {
+    isError ? soundSystem.play("error", 0.7) : soundSystem.play("button", 0.5);
+    
     const messageDiv = document.createElement('div');
     messageDiv.className = 'medieval-message';
     if (isError) messageDiv.classList.add('error');
@@ -49,9 +107,6 @@ function showMedievalMessage(title, message, isError = false) {
     }, 3000);
 }
 
-/**
- * Muestra la confirmación de salida del juego
- */
 function showExitConfirmation() {
     const exitDiv = document.createElement('div');
     exitDiv.className = 'exit-message';
@@ -72,11 +127,13 @@ function showExitConfirmation() {
     document.body.appendChild(exitDiv);
 
     document.getElementById('confirm-exit').addEventListener('click', () => {
+        soundSystem.play("close");
         exitDiv.style.animation = "fadeToBlack 2s forwards";
         setTimeout(() => window.close(), 2000);
     });
 
     document.getElementById('cancel-exit').addEventListener('click', () => {
+        soundSystem.play("button");
         exitDiv.classList.add('shake');
         setTimeout(() => exitDiv.remove(), 500);
     });
@@ -107,7 +164,6 @@ function startNewGame() {
     ];
     const randomMsg = messages[Math.floor(Math.random() * messages.length)];
     showMedievalMessage("Nueva Crónica", randomMsg);
-    // Aquí iría la lógica para iniciar el juego
 }
 
 function continueGame() {
@@ -115,7 +171,6 @@ function continueGame() {
     if (savedData) {
         gameState = JSON.parse(savedData);
         showMedievalMessage("Crónica Recuperada", "Retomando donde el destino te dejó...");
-        // Aquí iría la lógica para continuar
     } else {
         showMedievalMessage("Sin Registros", "No hay crónicas anteriores para continuar.", true);
     }
@@ -124,6 +179,7 @@ function continueGame() {
 // ==================== EVENT LISTENERS ==================== //
 // Menú principal
 newGameBtn.addEventListener("click", () => {
+    soundSystem.play("button");
     if (!localStorage.getItem('warningAccepted')) {
         showWarningModal();
     } else {
@@ -131,17 +187,31 @@ newGameBtn.addEventListener("click", () => {
     }
 });
 
-continueBtn.addEventListener("click", continueGame);
+continueBtn.addEventListener("click", () => {
+    soundSystem.play("button");
+    continueGame();
+});
 
-exitBtn.addEventListener("click", showExitConfirmation);
+exitBtn.addEventListener("click", () => {
+    soundSystem.play("button");
+    showExitConfirmation();
+});
 
 // Menú de opciones
-optionsBtn.addEventListener("click", () => optionsMenu.style.display = "block");
-closeOptionsBtn.addEventListener("click", () => optionsMenu.style.display = "none");
+optionsBtn.addEventListener("click", () => {
+    soundSystem.play("open");
+    optionsMenu.style.display = "block";
+});
+
+closeOptionsBtn.addEventListener("click", () => {
+    soundSystem.play("close");
+    optionsMenu.style.display = "none";
+});
 
 // Pestañas
 tabBtns.forEach(btn => {
     btn.addEventListener("click", () => {
+        soundSystem.play("tab");
         tabBtns.forEach(b => b.classList.remove("active"));
         tabContents.forEach(c => c.classList.remove("active"));
         
@@ -160,6 +230,7 @@ musicVolume.addEventListener("input", (e) => {
 // Guardar partida
 saveSlots.forEach(slot => {
     slot.addEventListener("click", () => {
+        soundSystem.play("button");
         const slotNum = slot.getAttribute("data-slot");
         gameState.savedGames[slotNum] = { /* datos del juego */ };
         localStorage.setItem(`warGameSave_${slotNum}`, JSON.stringify(gameState));
@@ -173,9 +244,11 @@ loadSlots.forEach(slot => {
         const slotNum = slot.getAttribute("data-slot");
         const savedData = localStorage.getItem(`warGameSave_${slotNum}`);
         if (savedData) {
+            soundSystem.play("button");
             gameState = JSON.parse(savedData);
             showMedievalMessage("Tomo Recuperado", `Crónica ${slotNum} despertada de su sueño`);
         } else {
+            soundSystem.play("error");
             showMedievalMessage("Tomo Vacío", "Este pergamino está en blanco", true);
         }
     });
@@ -183,11 +256,15 @@ loadSlots.forEach(slot => {
 
 // Sistema de advertencias
 acceptWarningBtn.addEventListener("click", () => {
+    soundSystem.play("button");
     hideWarningModal();
     startNewGame();
 });
 
-declineWarningBtn.addEventListener("click", showExitConfirmation);
+declineWarningBtn.addEventListener("click", () => {
+    soundSystem.play("button");
+    showExitConfirmation();
+});
 
 // Iniciar música después de interacción del usuario
 document.body.addEventListener("click", () => {
