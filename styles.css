@@ -247,19 +247,26 @@ select {
     align-items: center;
     z-index: 2000;
     background-color: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 .warning-content {
     background: #762c00f0;
     border: 15px double #5a0000;
     padding: 30px;
-    width: 90%;
-    max-width: 800px;
+    width: 95%; /* Más ancho que antes (era 90%) */
+    max-width: 900px; /* Aumentado de 800px */
     max-height: 90vh;
-    overflow: auto;
+    display: flex;
+    flex-direction: column;
     position: relative;
 }
-
+.warning-body {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 15px; /* Reducido para dar más espacio */
+}
 .warning-header {
     position: relative;
     padding-bottom: 20px;
@@ -303,7 +310,7 @@ select {
 }
 
 .scroll-content {
-    max-height: 60vh;
+    max-height: calc(80vh - 150px); /* Más espacio vertical */
     overflow-y: auto;
     padding-right: 10px;
 }
@@ -374,19 +381,55 @@ select {
 .warning-buttons {
     display: flex;
     gap: 15px;
-    margin-top: 20px;
     justify-content: center;
+    flex-shrink: 0;
+    padding-top: 15px;
+    border-top: 2px solid #5a0000;
+    position: sticky;
+    bottom: 0;
+    background: #762c00f0;
+    z-index: 2;
 }
-
+@media (max-width: 768px) {
+    .warning-content {
+        padding: 20px;
+        width: 98%; /* Más ancho en móviles */
+        max-height: 95vh;
+    }
+    
+    .warning-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .blood-oath, .flee-button {
+        width: 100%;
+        min-width: unset;
+        padding: 8px 10px;
+    }
+    
+    .scroll-content {
+        max-height: calc(85vh - 180px); /* Más espacio en móviles */
+    }
+    
+    .warning-header h2 {
+        font-size: 1.5em;
+    }
+}
+.blood-oath, .flee-button {
+    /* Mantén tus estilos existentes */
+    min-width: 200px; /* Ancho mínimo para mejor visualización */
+}
 .blood-oath {
     background: linear-gradient(to bottom, #8b0000, #5a0000);
     border: 2px solid #3a0000 !important;
-    padding: 12px 25px;
-    font-size: 1em;
+    padding: 8px 15px; /* Reducido de 12px 25px */
+    font-size: 0.9em; /* Reducido de 1em */
     color: #f5e7d0;
     font-family: 'Cinzel Decorative', cursive;
     cursor: pointer;
     transition: all 0.3s;
+    min-width: 160px; /* Reducido de 200px */
 }
 
 .blood-oath:hover {
@@ -398,14 +441,18 @@ select {
 .flee-button {
     background: linear-gradient(to bottom, #3a2815, #2a1c0e);
     border: 2px solid #1a1008 !important;
-    padding: 12px 25px;
-    font-size: 1em;
+    padding: 8px 15px; /* Reducido de 12px 25px */
+    font-size: 0.9em; /* Reducido de 1em */
     color: #f5e7d0;
     font-family: 'Cinzel Decorative', cursive;
     cursor: pointer;
     transition: all 0.3s;
+    min-width: 160px; /* Reducido de 200px */
 }
-
+.blood-oath:hover, .flee-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+}
 .flee-button:hover {
     background: linear-gradient(to bottom, #4a3825, #3a2c1e);
     transform: translateY(-3px);
