@@ -15,7 +15,7 @@ const warningModal = document.getElementById("warning-modal");
 const acceptWarningBtn = document.getElementById("accept-warning");
 const declineWarningBtn = document.getElementById("decline-warning");
 
-// Sistema de sonidos mejorado
+// Sistema de sonidos
 const soundSystem = {
     sounds: {
         button: new Audio("sounds/button-click.mp3"),
@@ -73,6 +73,7 @@ soundSystem.preloadSounds();
 // Estado del juego
 let gameState = {
     currentScene: 0,
+    currentNovelScene: 0,
     volume: 0.7,
     savedGames: {},
     warningAccepted: localStorage.getItem('warningAccepted') === 'true'
@@ -164,7 +165,7 @@ function showWarningModal() {
     warningAmbience.play().catch(e => console.log("Error al reproducir ambiente:", e));
 }
 
-// Ocultar advertencia (MODIFICADA)
+// Ocultar advertencia
 function hideWarningModal() {
     if (!warningModal) return;
     
@@ -180,8 +181,6 @@ function hideWarningModal() {
         warningAmbience.pause();
         warningAmbience.currentTime = 0;
     }
-    
-    // Eliminado el startNewGame() que estaba aquí
 }
 
 // Continuar juego
@@ -190,6 +189,13 @@ function continueGame() {
     if (savedData) {
         gameState = JSON.parse(savedData);
         showMedievalMessage("Crónica Recuperada", "Retomando donde el destino te dejó...");
+        
+        // Cargar datos de la novela y continuar desde la escena guardada
+        if (typeof novelEngine !== 'undefined') {
+            novelEngine.loadStory(novelData);
+            novelEngine.start();
+            novelEngine.currentScene = gameState.currentNovelScene || 0;
+        }
     } else {
         showMedievalMessage("Sin Registros", "No hay crónicas anteriores para continuar.", true);
     }
@@ -199,11 +205,61 @@ function continueGame() {
 function startNewGame() {
     gameState = {
         currentScene: 0,
+        currentNovelScene: 0,
         volume: 0.7,
         savedGames: {},
         warningAccepted: true
     };
+    
+    // Ocultar menú principal y comenzar novela
+    document.querySelector('.menu-container').style.display = 'none';
+    
+    // Iniciar la novela visual si el motor está disponible
+    if (typeof novelEngine !== 'undefined') {
+        novelEngine.loadStory(novelData);
+        novelEngine.start();
+    }
+    
     showMedievalMessage("Nueva Crónica", "Que comience tu leyenda...");
+}
+
+// Guardar partida
+function saveGame(slotNum) {
+    // Actualizar el estado de la novela si está activa
+    if (typeof novelEngine !== 'undefined') {
+        gameState.currentNovelScene = novelEngine.currentScene;
+    }
+    
+    gameState.savedGames[slotNum] = { 
+        date: new Date().toISOString(),
+        scene: gameState.currentNovelScene
+    };
+    
+    localStorage.setItem(`warGameSave_${slotNum}`, JSON.stringify(gameState));
+    localStorage.setItem('warGameSave_LAST', JSON.stringify(gameState));
+    
+    showMedievalMessage("Crónica Guardada", `Tomo ${slotNum} archivado en la biblioteca real`);
+}
+
+// Cargar partida
+function loadGame(slotNum) {
+    const savedData = localStorage.getItem(`warGameSave_${slotNum}`);
+    if (savedData) {
+        soundSystem.play("button");
+        gameState = JSON.parse(savedData);
+        
+        // Continuar la novela desde el punto guardado
+        if (typeof novelEngine !== 'undefined') {
+            novelEngine.loadStory(novelData);
+            novelEngine.start();
+            novelEngine.currentScene = gameState.currentNovelScene || 0;
+        }
+        
+        showMedievalMessage("Tomo Recuperado", `Crónica ${slotNum} despertada de su sueño`);
+    } else {
+        soundSystem.play("error");
+        showMedievalMessage("Tomo Vacío", "Este pergamino está en blanco", true);
+    }
 }
 
 // ===== EVENT LISTENERS ACTUALIZADOS =====
@@ -214,7 +270,7 @@ newGameBtn.addEventListener("click", () => {
     if (!gameState.warningAccepted) {
         showWarningModal();
     } else {
-        startNewGame(); // Solo inicia la historia si ya se aceptó la advertencia
+        startNewGame();
     }
 });
 
@@ -228,15 +284,28 @@ exitBtn.addEventListener("click", () => {
     showExitConfirmation();
 });
 
-// Menú de opciones
+// Menú de opciones (Consejo Real)
 optionsBtn.addEventListener("click", () => {
     soundSystem.play("open");
-    optionsMenu.style.display = "block";
+    
+    // Si estamos en modo novela, usar el método del motor
+    if (typeof novelEngine !== 'undefined' && 
+        novelEngine.elements.sceneContainer.style.display === 'block') {
+        novelEngine.showRoyalCouncil();
+    } else {
+        // Mostrar el menú normal
+        optionsMenu.style.display = "block";
+    }
 });
 
 closeOptionsBtn.addEventListener("click", () => {
     soundSystem.play("close");
     optionsMenu.style.display = "none";
+    
+    // Restaurar visibilidad si venimos de la novela
+    if (typeof novelEngine !== 'undefined') {
+        novelEngine.elements.sceneContainer.style.visibility = 'visible';
+    }
 });
 
 // Pestañas
@@ -256,6 +325,11 @@ tabBtns.forEach(btn => {
 musicVolume.addEventListener("input", (e) => {
     bgMusic.volume = e.target.value;
     gameState.volume = e.target.value;
+    
+    // Actualizar volumen en el motor de novela si existe
+    if (typeof novelEngine !== 'undefined') {
+        novelEngine.gameState.bgmVolume = e.target.value;
+    }
 });
 
 // Guardar partida
@@ -263,9 +337,7 @@ saveSlots.forEach(slot => {
     slot.addEventListener("click", () => {
         soundSystem.play("button");
         const slotNum = slot.getAttribute("data-slot");
-        gameState.savedGames[slotNum] = { /* datos del juego */ };
-        localStorage.setItem(`warGameSave_${slotNum}`, JSON.stringify(gameState));
-        showMedievalMessage("Crónica Guardada", `Tomo ${slotNum} archivado en la biblioteca real`);
+        saveGame(slotNum);
     });
 });
 
@@ -273,22 +345,14 @@ saveSlots.forEach(slot => {
 loadSlots.forEach(slot => {
     slot.addEventListener("click", () => {
         const slotNum = slot.getAttribute("data-slot");
-        const savedData = localStorage.getItem(`warGameSave_${slotNum}`);
-        if (savedData) {
-            soundSystem.play("button");
-            gameState = JSON.parse(savedData);
-            showMedievalMessage("Tomo Recuperado", `Crónica ${slotNum} despertada de su sueño`);
-        } else {
-            soundSystem.play("error");
-            showMedievalMessage("Tomo Vacío", "Este pergamino está en blanco", true);
-        }
+        loadGame(slotNum);
     });
 });
 
-// Sistema de advertencias ACTUALIZADO
+// Sistema de advertencias
 acceptWarningBtn.addEventListener("click", () => {
     soundSystem.play("button");
-    hideWarningModal(); // Solo oculta el modal, no inicia la historia
+    hideWarningModal();
 });
 
 declineWarningBtn.addEventListener("click", () => {
@@ -310,6 +374,11 @@ document.addEventListener("DOMContentLoaded", function() {
         bgMusic.play().catch(e => console.log("Error al iniciar música:", e));
         document.body.removeEventListener("click", initMusic);
     }, { once: true });
+    
+    // Cargar motor de novela visual si existe
+    if (typeof novelEngine !== 'undefined') {
+        novelEngine.loadStory(novelData);
+    }
 });
 
 window.addEventListener('resize', handleResize);
