@@ -25,16 +25,13 @@ const soundSystem = {
         error: new Audio("sounds/error.mp3")
     },
     
-    // Precarga todos los sonidos
     preloadSounds: function() {
         for (const key in this.sounds) {
             if (this.sounds.hasOwnProperty(key)) {
                 this.sounds[key].preload = "auto";
                 this.sounds[key].load();
-                // Crear buffers para sonidos rápidos
                 if (key === "button" || key === "tab") {
                     this.sounds[key].addEventListener('canplaythrough', () => {
-                        // Crear copias para sonidos rápidos
                         this[`${key}Buffer`] = this.sounds[key].cloneNode();
                     });
                 }
@@ -42,10 +39,8 @@ const soundSystem = {
         }
     },
     
-    // Reproduce sonido con respuesta instantánea
     play: function(soundName, volume = 1) {
         try {
-            // Usar buffer para sonidos que necesitan respuesta rápida
             const sound = (soundName === "button" && this.buttonBuffer) ? 
                 this.buttonBuffer : 
                 (soundName === "tab" && this.tabBuffer) ? 
@@ -57,10 +52,8 @@ const soundSystem = {
             sound.volume = volume;
             sound.currentTime = 0;
             
-            // Intenta reproducir inmediatamente
             const promise = sound.play();
             
-            // Maneja posibles errores de reproducción
             if (promise !== undefined) {
                 promise.catch(error => {
                     console.log("Fallback to normal sound playback");
@@ -82,8 +75,10 @@ let gameState = {
     currentScene: 0,
     volume: 0.7,
     savedGames: {},
-    warningAccepted: false
+    warningAccepted: localStorage.getItem('warningAccepted') === 'true'
 };
+
+// Manejar redimensionamiento
 function handleResize() {
     const optionsMenu = document.getElementById("options-menu");
     if (window.innerWidth < 768) {
@@ -94,7 +89,8 @@ function handleResize() {
         optionsMenu.style.height = "80vh";
     }
 }
-// ==================== SISTEMA DE MENSAJES ==================== //
+
+// Mostrar mensaje medieval
 function showMedievalMessage(title, message, isError = false) {
     isError ? soundSystem.play("error", 0.7) : soundSystem.play("button", 0.5);
     
@@ -116,6 +112,7 @@ function showMedievalMessage(title, message, isError = false) {
     }, 3000);
 }
 
+// Confirmación de salida
 function showExitConfirmation() {
     const exitDiv = document.createElement('div');
     exitDiv.className = 'exit-message';
@@ -148,33 +145,46 @@ function showExitConfirmation() {
     });
 }
 
-// ==================== SISTEMA DE ADVERTENCIAS ==================== //
+// Mostrar advertencia
 function showWarningModal() {
+    if (!warningModal) {
+        console.error("Elemento warning-modal no encontrado en el DOM");
+        return;
+    }
+    
     warningModal.style.display = "flex";
     bgMusic.pause();
+    soundSystem.play("error", 0.8);
     document.body.style.backgroundImage = "url('img/dark-castle.jpg')";
+    
+    const warningAmbience = new Audio("sounds/wind-howling.mp3");
+    warningAmbience.volume = 0.5;
+    warningAmbience.loop = true;
+    warningAmbience.id = "warning-ambience";
+    warningAmbience.play().catch(e => console.log("Error al reproducir ambiente:", e));
 }
 
+// Ocultar advertencia (MODIFICADA)
 function hideWarningModal() {
+    if (!warningModal) return;
+    
     warningModal.style.display = "none";
     document.body.style.backgroundImage = "url('img/medieval-bg.jpg')";
     bgMusic.volume = gameState.volume;
     bgMusic.play().catch(e => console.log("Error al reanudar música:", e));
     localStorage.setItem('warningAccepted', 'true');
+    gameState.warningAccepted = true;
+    
+    const warningAmbience = document.getElementById("warning-ambience");
+    if (warningAmbience) {
+        warningAmbience.pause();
+        warningAmbience.currentTime = 0;
+    }
+    
+    // Eliminado el startNewGame() que estaba aquí
 }
 
-// ==================== SISTEMA DE JUEGO ==================== //
-function startNewGame() {
-    const messages = [
-        "¡Que los dioses guíen tu camino!",
-        "¡La leyenda comienza!",
-        "¡El reino clama por un héroe!",
-        "¡Que el valor guíe tu espada!"
-    ];
-    const randomMsg = messages[Math.floor(Math.random() * messages.length)];
-    showMedievalMessage("Nueva Crónica", randomMsg);
-}
-
+// Continuar juego
 function continueGame() {
     const savedData = localStorage.getItem('warGameSave_LAST');
     if (savedData) {
@@ -185,14 +195,26 @@ function continueGame() {
     }
 }
 
-// ==================== EVENT LISTENERS ==================== //
+// Nuevo juego
+function startNewGame() {
+    gameState = {
+        currentScene: 0,
+        volume: 0.7,
+        savedGames: {},
+        warningAccepted: true
+    };
+    showMedievalMessage("Nueva Crónica", "Que comience tu leyenda...");
+}
+
+// ===== EVENT LISTENERS ACTUALIZADOS =====
+
 // Menú principal
 newGameBtn.addEventListener("click", () => {
     soundSystem.play("button");
-    if (!localStorage.getItem('warningAccepted')) {
+    if (!gameState.warningAccepted) {
         showWarningModal();
     } else {
-        startNewGame();
+        startNewGame(); // Solo inicia la historia si ya se aceptó la advertencia
     }
 });
 
@@ -263,11 +285,10 @@ loadSlots.forEach(slot => {
     });
 });
 
-// Sistema de advertencias
+// Sistema de advertencias ACTUALIZADO
 acceptWarningBtn.addEventListener("click", () => {
     soundSystem.play("button");
-    hideWarningModal();
-    startNewGame();
+    hideWarningModal(); // Solo oculta el modal, no inicia la historia
 });
 
 declineWarningBtn.addEventListener("click", () => {
@@ -275,29 +296,26 @@ declineWarningBtn.addEventListener("click", () => {
     showExitConfirmation();
 });
 
-// Iniciar música después de interacción del usuario
-document.body.addEventListener("click", () => {
-    bgMusic.volume = gameState.volume;
-    bgMusic.play().catch(e => console.log("Error al iniciar música:", e));
-}, { once: true });
-
-// Verificar advertencia al cargar
-document.addEventListener("DOMContentLoaded", () => {
-    if (!localStorage.getItem('warningAccepted')) {
+// Inicialización
+document.addEventListener("DOMContentLoaded", function() {
+    handleResize();
+    
+    if (!gameState.warningAccepted) {
         setTimeout(showWarningModal, 1000);
     }
+    
+    // Música al primer click
+    document.body.addEventListener("click", function initMusic() {
+        bgMusic.volume = gameState.volume;
+        bgMusic.play().catch(e => console.log("Error al iniciar música:", e));
+        document.body.removeEventListener("click", initMusic);
+    }, { once: true });
 });
+
+window.addEventListener('resize', handleResize);
 
 // Verificación de carga de imagen
 const bg = new Image();
 bg.src = 'img/medieval-bg.jpg';
-bg.onload = () => console.log('Imagen cargada correctamente');
-bg.onerror = () => console.error('Error al cargar imagen');
-window.addEventListener('resize', handleResize);
-document.addEventListener("DOMContentLoaded", () => {
-    handleResize(); // Ejecutar al cargar
-    
-    if (!localStorage.getItem('warningAccepted')) {
-        setTimeout(showWarningModal, 1000);
-    }
-});
+bg.onload = () => console.log('Imagen de fondo cargada correctamente');
+bg.onerror = () => console.error('Error al cargar imagen de fondo');

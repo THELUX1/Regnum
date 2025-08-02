@@ -63,16 +63,16 @@
                         <div class="option-item">
                             <label><i class="fas fa-gem"></i>Calidad de imagen</label>
                             <select id="resolution">
-                                <option value="high">Alta (Corte Real)</option>
-                                <option value="medium">Media (Ciudad)</option>
-                                <option value="low">Baja (Aldea)</option>
+                                <option value="high">Alta (Alto consumo)</option>
+                                <option value="medium">Media (Medio consumo)</option>
+                                <option value="low">Baja (Ahorro de datos)</option>
                             </select>
                         </div>
                         <div class="option-item">
                             <label><i class="fas fa-chess-rook"></i> Modo Castillo</label>
                             <select id="display-mode">
-                                <option value="fullscreen">Gran Salón</option>
-                                <option value="windowed">Torreón</option>
+                                <option value="fullscreen">Pantalla completa</option>
+                                <option value="windowed">Ventana</option>
                             </select>
                         </div>
                     </div>
@@ -103,21 +103,46 @@
 <div class="warning-modal" id="warning-modal">
     <div class="warning-content">
         <div class="warning-header">
-            <h2><i class="fas fa-exclamation-triangle"></i> ADVERTENCIA REAL</h2>
+            <h2><i class="fas fa-skull-crossbones"></i> DECRETO DEL CONSEJO REAL</h2>
+            <div class="royal-seal">
+                <i class="fas fa-crown"></i>
+                <div class="seal-ring"></div>
+            </div>
         </div>
         <div class="warning-body">
-            <p>Por decreto del Consejo Real, se advierte al jugador:</p>
-            <ul>
-                <li><i class="fas fa-skull"></i> Contenido violento y sangriento</li>
-                <li><i class="fas fa-brain"></i> Temas psicológicos intensos</li>
-                <li><i class="fas fa-fire"></i> Luces parpadeantes</li>
-                <li><i class="fas fa-ghost"></i> Situaciones perturbadoras</li>
-            </ul>
-            <p>Esta crónica no es apta para siervos de corazón débil. ¿Juráis continuar bajo vuestro propio riesgo?</p>
+            <div class="scroll-content">
+                <p>Por orden de Su Majestad el Rey, se advierte a todo aquel que se atreva a adentrarse en esta crónica:</p>
+                
+                <div class="warning-section">
+                    <h3><i class="fas fa-shield-alt"></i> ADVERTENCIAS DEL REINO</h3>
+                    <ul>
+                        <li><i class="fas fa-sword"></i> <strong>Violencia gráfica:</strong> Batallas sangrientas y ejecuciones brutales</li>
+                        <li><i class="fas fa-brain"></i> <strong>Horror psicológico:</strong> Situaciones que pueden perturbar almas sensibles</li>
+                        <li><i class="fas fa-flask"></i> <strong>Uso de pociones prohibidas:</strong> Representación de sustancias alquímicas</li>
+                        <li><i class="fas fa-ghost"></i> <strong>Contenido sobrenatural:</strong> Demonios, brujería y magia oscura</li>
+                        <li><i class="fas fa-fire"></i> <strong>Luces parpadeantes:</strong> Efectos que pueden afectar a los sensitivos</li>
+                    </ul>
+                </div>
+                
+                <div class="oath-section">
+                    <h3><i class="fas fa-scroll"></i> JURAMENTO DEL AVENTURERO</h3>
+                    <p>"Yo, <span class="underline"></span>, bajo mi propio riesgo y voluntad, acepto adentrarme en estas tierras prohibidas, comprendiendo que:</p>
+                    <ol>
+                        <li>Esta crónica no es apta para pajes ni doncellas de corazón débil</li>
+                        <li>Las imágenes pueden herir sensibilidades como una espada afilada</li>
+                        <li>Abandonaré estas tierras si mi espíritu no es lo suficientemente fuerte</li>
+                    </ol>
+                    <p>Así lo juro por mi honor y mi vida."</p>
+                </div>
+            </div>
         </div>
         <div class="warning-buttons">
-            <button id="accept-warning"><i class="fas fa-handshake"></i> Acepto el riesgo</button>
-            <button id="decline-warning"><i class="fas fa-door-open"></i> Abandonar el reino</button>
+            <button id="accept-warning" class="blood-oath">
+                <i class="fas fa-hand-holding-heart"></i> Firmar con sangre
+            </button>
+            <button id="decline-warning" class="flee-button">
+                <i class="fas fa-running"></i> Huir del reino
+            </button>
         </div>
     </div>
 </div>
