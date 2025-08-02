@@ -84,7 +84,16 @@ let gameState = {
     savedGames: {},
     warningAccepted: false
 };
-
+function handleResize() {
+    const optionsMenu = document.getElementById("options-menu");
+    if (window.innerWidth < 768) {
+        optionsMenu.style.width = "95%";
+        optionsMenu.style.height = "90vh";
+    } else {
+        optionsMenu.style.width = "80%";
+        optionsMenu.style.height = "80vh";
+    }
+}
 // ==================== SISTEMA DE MENSAJES ==================== //
 function showMedievalMessage(title, message, isError = false) {
     isError ? soundSystem.play("error", 0.7) : soundSystem.play("button", 0.5);
@@ -284,3 +293,11 @@ const bg = new Image();
 bg.src = 'img/medieval-bg.jpg';
 bg.onload = () => console.log('Imagen cargada correctamente');
 bg.onerror = () => console.error('Error al cargar imagen');
+window.addEventListener('resize', handleResize);
+document.addEventListener("DOMContentLoaded", () => {
+    handleResize(); // Ejecutar al cargar
+    
+    if (!localStorage.getItem('warningAccepted')) {
+        setTimeout(showWarningModal, 1000);
+    }
+});
