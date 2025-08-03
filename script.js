@@ -359,43 +359,44 @@ declineWarningBtn.addEventListener("click", () => {
     soundSystem.play("button");
     showExitConfirmation();
 });
-// Manejo de instalación PWA
-// ===== MANEJO DE INSTALACIÓN PWA =====
+// ===== MANEJO DE INSTALACIÓN PWA - Versión GitHub compatible =====
 let deferredPrompt;
 const installBtn = document.getElementById('install-app');
 
-// Verificar si ya está instalado
-window.addEventListener('load', () => {
-    if (window.matchMedia('(display-mode: standalone)').matches) {
-        installBtn.style.display = 'none';
-    }
-});
+// Detectar si estamos en GitHub Pages
+const isGitHubPages = window.location.host.includes('github.io');
+
+// Mostrar el botón manualmente después de 10 segundos si es GitHub Pages
+if (isGitHubPages) {
+    setTimeout(() => {
+        installBtn.style.display = 'flex';
+        setTimeout(() => {
+            installBtn.classList.add('visible');
+        }, 100);
+    }, 10000);
+}
 
 window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
     
-    // Mostrar el botón con transición
-    installBtn.style.display = 'flex';
-    setTimeout(() => {
-        installBtn.classList.add('visible');
-    }, 100);
-    
-    // Ocultar después de 30 segundos si no se interactúa
-    setTimeout(() => {
-        if (deferredPrompt) {
-            installBtn.classList.remove('visible');
-            setTimeout(() => {
-                installBtn.style.display = 'none';
-            }, 500);
-        }
-    }, 30000);
+    // Solo mostrar automáticamente si NO es GitHub Pages
+    if (!isGitHubPages) {
+        installBtn.style.display = 'flex';
+        setTimeout(() => {
+            installBtn.classList.add('visible');
+        }, 100);
+    }
 });
 
 installBtn.addEventListener('click', async () => {
-    if (!deferredPrompt) return;
+    if (!deferredPrompt) {
+        if (isGitHubPages) {
+            showMedievalMessage("Instrucciones", "Para instalar: 1) Usa Chrome/Edge 2) Haz clic en 'Instalar' en la barra de direcciones", false);
+        }
+        return;
+    }
     
-    installBtn.classList.remove('pulse');
     installBtn.innerHTML = '<i class="fas fa-cog fa-spin"></i> Preparando...';
     
     try {
@@ -403,40 +404,25 @@ installBtn.addEventListener('click', async () => {
         const { outcome } = await deferredPrompt.userChoice;
         
         if (outcome === 'accepted') {
-            soundSystem.play("button");
-            showMedievalMessage("Instalación Real", "La app ahora forma parte de tu corte", false);
-            installBtn.style.display = 'none';
+            showMedievalMessage("Instalación Exitosa", "La app ahora está instalada", false);
         } else {
-            soundSystem.play("error", 0.7);
-            showMedievalMessage("Instalación Cancelada", "El decreto real fue ignorado", true);
+            showMedievalMessage("Instalación Cancelada", "Puedes instalarla después", true);
         }
     } catch (err) {
         console.error("Error al instalar:", err);
-        soundSystem.play("error", 0.7);
-        showMedievalMessage("Error Real", "El escribano falló al registrar el decreto", true);
+        showMedievalMessage("Error", "No se pudo instalar: " + err.message, true);
     }
     
-    deferredPrompt = null;
     installBtn.innerHTML = '<i class="fas fa-download"></i> Instalar App';
+    installBtn.style.display = 'none';
+    deferredPrompt = null;
 });
 
+// Verificar si ya está instalado
 window.addEventListener('appinstalled', () => {
-    deferredPrompt = null;
-    installBtn.classList.remove('visible');
-    setTimeout(() => {
-        installBtn.style.display = 'none';
-    }, 500);
+    installBtn.style.display = 'none';
     console.log('PWA instalada correctamente');
 });
-
-function checkAndShowInstallButton() {
-    if (deferredPrompt && !window.matchMedia('(display-mode: standalone)').matches) {
-        installBtn.style.display = 'flex';
-        setTimeout(() => {
-            installBtn.classList.add('visible');
-        }, 100);
-    }
-}
 // Inicialización
 document.addEventListener("DOMContentLoaded", function() {
     handleResize();
@@ -476,4 +462,5 @@ if ('serviceWorker' in navigator) {
                 console.log('Error al registrar ServiceWorker:', error);
             });
     });
-}
+    }
+        
