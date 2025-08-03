@@ -1,7 +1,7 @@
 {
   "name": "Crónicas Medievales",
   "short_name": "Crónicas",
-  "start_url": "/",
+  "start_url": "/Regnum",
   "display": "standalone",
   "background_color": "#1a1106",
   "theme_color": "#5a3a1f",
