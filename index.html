@@ -163,6 +163,48 @@
 <audio id="close-sound" src="sounds/door-close.mp3"></audio>
 <audio id="error-sound" src="sounds/error.mp3"></audio>
     <script>
+// Detector de orientación
+function checkOrientation() {
+    const orientationWarning = document.getElementById('orientation-warning');
+    if (window.innerHeight > window.innerWidth) {
+        // Vertical - mostrar advertencia
+        if (!orientationWarning) {
+            const warningDiv = document.createElement('div');
+            warningDiv.id = 'orientation-warning';
+            warningDiv.innerHTML = `
+                <div class="orientation-content">
+                    <h2><i class="fas fa-rotate"></i> Gira tu dispositivo</h2>
+                    <p>Para una mejor experiencia, coloca tu dispositivo en posición horizontal</p>
+                    <div class="orientation-icon">
+                        <i class="fas fa-mobile-screen fa-rotate-90"></i>
+                        <i class="fas fa-arrow-right"></i>
+                        <i class="fas fa-mobile-screen"></i>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(warningDiv);
+            
+            // Bloquear interacción
+            document.body.style.overflow = 'hidden';
+            document.querySelector('.menu-container').style.filter = 'blur(5px)';
+            document.querySelector('.menu-container').style.pointerEvents = 'none';
+        }
+    } else {
+        // Horizontal - ocultar advertencia si existe
+        if (orientationWarning) {
+            orientationWarning.remove();
+            document.body.style.overflow = '';
+            document.querySelector('.menu-container').style.filter = '';
+            document.querySelector('.menu-container').style.pointerEvents = '';
+        }
+    }
+}
+
+// Verificar al cargar y al cambiar tamaño
+window.addEventListener('load', checkOrientation);
+window.addEventListener('resize', checkOrientation);
+    </script>
+    <script>
     // Función para solicitar pantalla completa
 function requestFullScreen() {
     const el = document.documentElement;
