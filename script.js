@@ -360,14 +360,32 @@ declineWarningBtn.addEventListener("click", () => {
     showExitConfirmation();
 });
 // ===== MANEJO DE INSTALACIÓN PWA - Versión GitHub compatible =====
+// ===== MANEJO DE INSTALACIÓN PWA - Versión GitHub compatible =====
 let deferredPrompt;
 const installBtn = document.getElementById('install-app');
+
+// Verificar si la app ya está instalada
+function checkIfAppIsInstalled() {
+    // Para navegadores que soportan window.matchMedia
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+        installBtn.style.display = 'none';
+        return true;
+    }
+    
+    // Para iOS/iPadOS
+    if (window.navigator.standalone === true) {
+        installBtn.style.display = 'none';
+        return true;
+    }
+    
+    return false;
+}
 
 // Detectar si estamos en GitHub Pages
 const isGitHubPages = window.location.host.includes('github.io');
 
-// Mostrar el botón manualmente después de 10 segundos si es GitHub Pages
-if (isGitHubPages) {
+// Mostrar el botón manualmente después de 10 segundos si es GitHub Pages y la app no está instalada
+if (isGitHubPages && !checkIfAppIsInstalled()) {
     setTimeout(() => {
         installBtn.style.display = 'flex';
         setTimeout(() => {
@@ -377,6 +395,12 @@ if (isGitHubPages) {
 }
 
 window.addEventListener('beforeinstallprompt', (e) => {
+    // Si la app ya está instalada, no mostrar el botón
+    if (checkIfAppIsInstalled()) {
+        installBtn.style.display = 'none';
+        return;
+    }
+    
     e.preventDefault();
     deferredPrompt = e;
     
@@ -405,6 +429,7 @@ installBtn.addEventListener('click', async () => {
         
         if (outcome === 'accepted') {
             showMedievalMessage("Instalación Exitosa", "La app ahora está instalada", false);
+            installBtn.style.display = 'none';
         } else {
             showMedievalMessage("Instalación Cancelada", "Puedes instalarla después", true);
         }
@@ -414,14 +439,33 @@ installBtn.addEventListener('click', async () => {
     }
     
     installBtn.innerHTML = '<i class="fas fa-download"></i> Instalar App';
-    installBtn.style.display = 'none';
     deferredPrompt = null;
 });
 
-// Verificar si ya está instalado
+// Verificar si ya está instalado al cargar la página
+document.addEventListener("DOMContentLoaded", function() {
+    checkIfAppIsInstalled();
+});
+
+// Verificar si ya está instalado cuando cambia el modo de visualización
 window.addEventListener('appinstalled', () => {
     installBtn.style.display = 'none';
     console.log('PWA instalada correctamente');
+});
+
+// Escuchar cambios en el modo de visualización (útil para cuando se instala/desinstala)
+window.matchMedia('(display-mode: standalone)').addEventListener('change', (evt) => {
+    if (evt.matches) {
+        installBtn.style.display = 'none';
+    } else {
+        // Solo mostrar si tenemos deferredPrompt y no es GitHub Pages
+        if (deferredPrompt && !isGitHubPages) {
+            installBtn.style.display = 'flex';
+            setTimeout(() => {
+                installBtn.classList.add('visible');
+            }, 100);
+        }
+    }
 });
 // Inicialización
 document.addEventListener("DOMContentLoaded", function() {
@@ -463,4 +507,5 @@ if ('serviceWorker' in navigator) {
             });
     });
     }
+
         
