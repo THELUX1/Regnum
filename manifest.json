@@ -1,0 +1,20 @@
+{
+  "name": "Crónicas Medievales",
+  "short_name": "Crónicas",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1106",
+  "theme_color": "#5a3a1f",
+  "icons": [
+    {
+      "src": "img/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "img/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

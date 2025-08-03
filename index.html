@@ -2,93 +2,203 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>La Reina del Dolor - Novela Visual</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Crimson+Text:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Crónicas Medievales</title>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel+Decorative&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Pantalla de inicio -->
-    <div id="start-screen" class="screen">
-        <div class="title-container">
-            <h1>La Reina del Dolor</h1>
-            <h2>Volumen I: La Niña que Vino del Futuro</h2>
-            <div class="quote">"Solo la razón es ley. Todo lo demás, es traición."</div>
+    <button id="install-app"><i class="fas fa-download"></i> Instalar App</button>
+    <div class="menu-container">        
+        <!-- Menú principal estilo taberna -->
+        <div class="menu-buttons">
+            <button id="new-game"><i class="fas fa-scroll"></i> Nueva Crónica</button>
+            <button id="continue"><i class="fas fa-book"></i> Continuar Relato</button>
+            <button id="options-btn"><i class="fas fa-crown"></i> Consejo Real</button>
+            <button id="exit"><i class="fas fa-door-open"></i> Salir del Reino</button>
         </div>
-        <div class="menu">
-            <button id="start-btn" class="btn">Comenzar</button>
-            <button id="load-btn" class="btn">Cargar</button>
-            <button id="settings-btn" class="btn">Configuración</button>
-            <button id="credits-btn" class="btn">Créditos</button>
-        </div>
-        <audio id="bg-music" loop>
-            <source src="audio/background.mp3" type="audio/mpeg">
-        </audio>
-        <audio id="click-sound">
-            <source src="audio/click.mp3" type="audio/mpeg">
-        </audio>
-    </div>
-
-    <!-- Pantalla de configuración -->
-    <div id="settings-screen" class="screen hidden">
-        <h2>Configuración</h2>
-        <div class="settings-options">
-            <div class="setting">
-                <label for="volume">Volumen música:</label>
-                <input type="range" id="volume" min="0" max="1" step="0.1" value="0.5">
+        
+        <!-- Menú de opciones estilo salón real -->
+        <div class="options-menu" id="options-menu">
+            <div class="options-header">
+                <h2><i class="fas fa-chess-rook"></i> SALÓN DEL REY</h2>
+                <button id="close-options"><i class="fas fa-times"></i></button>
             </div>
-            <div class="setting">
-                <label for="text-speed">Velocidad del texto:</label>
-                <input type="range" id="text-speed" min="1" max="10" step="1" value="5">
+            
+            <div class="options-container">
+                <!-- Columna izquierda - Botones estilo vitral -->
+                <div class="options-tabs">
+                    <button class="tab-btn active" data-tab="audio">
+                        <i class="fas fa-harp"></i> Juglares
+                    </button>
+                    <button class="tab-btn" data-tab="graphics">
+                        <i class="fas fa-chess-board"></i> Tablero
+                    </button>
+                    <button class="tab-btn" data-tab="save">
+                        <i class="fas fa-feather-alt"></i> Escribir
+                    </button>
+                    <button class="tab-btn" data-tab="load">
+                        <i class="fas fa-book-open"></i> Leer
+                    </button>
+                </div>
+                
+                <!-- Columna derecha - Contenido estilo pergamino -->
+                <div class="tab-content-container">
+                    <!-- Pestaña Audio -->
+                    <div class="tab-content active" id="audio-tab">
+                        <h3><i class="fas fa-harp"></i> MENESTERES</h3>
+                        <div class="option-item">
+                            <label><i class="fas fa-music"></i> Volumen de música</label>
+                            <input type="range" id="music-volume" min="0" max="1" step="0.1" value="0.7">
+                        </div>
+                        <div class="option-item">
+                            <label><i class="fas fa-horse"></i> Sonidos del Reino</label>
+                            <input type="range" id="sfx-volume" min="0" max="1" step="0.1" value="0.9">
+                        </div>
+                    </div>
+                    
+                    <!-- Pestaña Imagen -->
+                    <div class="tab-content" id="graphics-tab">
+                        <h3><i class="fas fa-chess-board"></i> VISUALES REALES</h3>
+                        <div class="option-item">
+                            <label><i class="fas fa-gem"></i>Calidad de imagen</label>
+                            <select id="resolution">
+                                <option value="high">Alta (Alto consumo)</option>
+                                <option value="medium">Media (Medio consumo)</option>
+                                <option value="low">Baja (Ahorro de datos)</option>
+                            </select>
+                        </div>
+                        <div class="option-item">
+                            <label><i class="fas fa-chess-rook"></i> Modo Castillo</label>
+                            <select id="display-mode">
+                                <option value="fullscreen">Pantalla completa</option>
+                                <option value="windowed">Ventana</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Pestaña Guardar -->
+                    <div class="tab-content" id="save-tab">
+                        <h3><i class="fas fa-feather-alt"></i> ARCHIVOS REALES</h3>
+                        <div class="save-slots">
+                            <button class="save-slot" data-slot="1"><i class="fas fa-scroll"></i> Tomo I</button>
+                            <button class="save-slot" data-slot="2"><i class="fas fa-scroll"></i> Tomo II</button>
+                            <button class="save-slot" data-slot="3"><i class="fas fa-scroll"></i> Tomo III</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Pestaña Cargar -->
+                    <div class="tab-content" id="load-tab">
+                        <h3><i class="fas fa-book-open"></i> ARCHIVOS ANTIGUOS</h3>
+                        <div class="save-slots">
+                            <button class="load-slot" data-slot="1"><i class="fas fa-book-dead"></i> Crónica I</button>
+                            <button class="load-slot" data-slot="2"><i class="fas fa-book-dead"></i> Crónica II</button>
+                            <button class="load-slot" data-slot="3"><i class="fas fa-book-dead"></i> Crónica III</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="setting">
-                <label for="auto-play">Auto-avance:</label>
-                <input type="checkbox" id="auto-play">
+        </div>
+    </div>
+<div class="warning-modal" id="warning-modal">
+    <div class="warning-content">
+        <div class="warning-header">
+            <h2><i class="fas fa-skull-crossbones"></i> DECRETO DE LA REINA</h2>
+            <div class="royal-seal">
+                <i class="fas fa-crown"></i>
+                <div class="seal-ring"></div>
             </div>
         </div>
-        <button id="back-btn" class="btn">Volver</button>
-    </div>
-
-    <!-- Pantalla de créditos -->
-    <div id="credits-screen" class="screen hidden">
-        <h2>Créditos</h2>
-        <div class="credits-content">
-            <p>Basado en la novela "La Reina del Dolor"</p>
-            <p>Desarrollado por [Tu Nombre]</p>
-            <p>Música: "Elegía" por [Artista]</p>
-            <p>© 2023 Todos los derechos reservados</p>
-        </div>
-        <button id="credits-back-btn" class="btn">Volver</button>
-    </div>
-
-    <!-- Pantalla principal del juego -->
-    <div id="game-screen" class="screen hidden">
-        <div id="background-container" class="background-container">
-            <!-- Las imágenes de fondo se cargarán aquí dinámicamente -->
-        </div>
-        
-        <div id="character-container" class="character-container">
-            <!-- Los personajes se cargarán aquí dinámicamente -->
-        </div>
-        
-        <div id="text-container" class="text-container">
-            <div id="name-display" class="name-display"></div>
-            <div id="text-display" class="text-display"></div>
-            <div id="choices" class="choices hidden"></div>
-            <button id="next-btn" class="next-btn">▶</button>
-        </div>
-        
-        <div id="menu-btn" class="menu-btn">☰</div>
-        
-        <div id="game-menu" class="game-menu hidden">
-            <button id="save-btn" class="menu-option">Guardar</button>
-            <button id="load-game-btn" class="menu-option">Cargar</button>
-            <button id="settings-game-btn" class="menu-option">Configuración</button>
-            <button id="return-btn" class="menu-option">Volver al juego</button>
-            <button id="quit-btn" class="menu-option">Salir al menú</button>
+        <div class="warning-body">
+            <div class="scroll-content">
+                <p>Por orden de Su Majestad Lilianne Veilart, se advierte:</p>
+                
+                <div class="warning-section">
+                    <h3><i class="fas fa-shield-alt"></i> ADVERTENCIAS DEL REINO</h3>
+                    <ul>                       
+                            <li><i class="fas fa-skull"></i> <strong>Violencia gráfica:</strong> Ejecuciones, torturas y batallas sangrientas</li>
+                            <li><i class="fas fa-brain"></i> <strong>Horror psicológico:</strong> Situaciones extremas de supervivencia</li>
+                            <li><i class="fas fa-flask"></i> <strong>Experimentos inhumanos:</strong> Métodos de la Reina para "purificar" el reino</li>
+                            <li><i class="fas fa-fire"></i> <strong>Quemas de herejes:</strong> Ejecuciones públicas frecuentes</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="oath-section">
+                        <h3><i class="fas fa-scroll"></i> JURAMENTO DEL SÚBDITO</h3>
+                        <p>"Yo, bajo mi propia voluntad, acepto:</p>
+                        <ol>
+                            <li>Que esta crónica no es para corazones débiles</li>
+                            <li>Que la Reina no perdona errores ni debilidades</li>
+                            <li>Que abandonar el reino antes de tiempo es traición</li>
+                        </ol>
+                        <p>Lo juro por mi sangre."</p>
+                    </div>
+                </div>
+            </div>
+        <div class="warning-buttons">
+            <button id="accept-warning" class="blood-oath">
+                <i class="fas fa-hand-holding-heart"></i> Firmar con sangre
+            </button>
+            <button id="decline-warning" class="flee-button">
+                <i class="fas fa-running"></i> Huir del reino
+            </button>
         </div>
     </div>
+</div>
+    <!-- Audio ambiental medieval -->
+    <audio id="bg-music" loop>
+        <source src="sounds/medieval-ambient.mp3" type="audio/mpeg">
+    </audio>
+    <!-- Efectos de sonido -->
+<audio id="button-sound" src="sounds/button-click.mp3"></audio>
+<audio id="tab-sound" src="sounds/page-turn.mp3"></audio>
+<audio id="open-sound" src="sounds/door-open.mp3"></audio>
+<audio id="close-sound" src="sounds/door-close.mp3"></audio>
+<audio id="error-sound" src="sounds/error.mp3"></audio>
+    <script>
+    // Función para solicitar pantalla completa
+function requestFullScreen() {
+    const el = document.documentElement;
+    const requestFullScreen = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+    
+    if (requestFullScreen) {
+        requestFullScreen.call(el).catch(err => {
+            console.log("Error al solicitar pantalla completa:", err);
+        });
+    }
+}
 
+// Solicitar pantalla completa al hacer clic o tocar
+document.addEventListener('click', requestFullScreen);
+document.addEventListener('touchstart', requestFullScreen);
+
+// Manejar cambios en el estado de pantalla completa
+document.addEventListener('fullscreenchange', handleResize);
+document.addEventListener('webkitfullscreenchange', handleResize);
+document.addEventListener('MSFullscreenChange', handleResize);
+
+function handleResize() {
+    // Ajustar tamaños cuando cambia la orientación
+    setTimeout(() => {
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+    }, 300);
+}
+
+// Inicializar al cargar
+window.addEventListener('load', () => {
+    handleResize();
+    // Forzar redimensionamiento en móviles
+    window.visualViewport.addEventListener('resize', handleResize);
+});
+  </script>
+    <script src="engine.js"></script>
+    <script src="novelData.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
