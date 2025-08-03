@@ -1,6 +1,6 @@
 // sw.js - Service Worker para Crónicas Medievales en GitHub Pages (repo: Regnum)
 
-const CACHE_NAME = 'cronicas-medievales-v1';
+const CACHE_NAME = 'Regnum-v1';
 const OFFLINE_URL = '/Regnum/index.html'; // Página de respaldo en caso de estar offline
 const ASSETS_TO_CACHE = [
   '/Regnum/',
