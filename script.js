@@ -507,5 +507,4 @@ if ('serviceWorker' in navigator) {
             });
     });
     }
-
         
