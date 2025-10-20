@@ -7,7 +7,8 @@ let gameState = {
         masterVolume: 50,
         musicVolume: 50,
         textSpeed: 5,
-        musicEnabled: true
+        musicEnabled: true,
+        fullscreen: false
     }
 };
 
@@ -31,6 +32,11 @@ const openMenuBtn = document.getElementById('open-menu-btn');
 const backToMenuBtn = document.getElementById('back-to-menu-btn');
 const backFromSettingsBtn = document.getElementById('back-from-settings');
 const resetSettingsBtn = document.getElementById('reset-settings');
+
+// Controles de pantalla completa
+const fullscreenBtn = document.getElementById('fullscreen-btn');
+const fullscreenGameBtn = document.getElementById('fullscreen-btn-game');
+const fullscreenSettingsBtn = document.getElementById('fullscreen-settings-btn');
 
 // Controles de audio
 const backgroundMusic = document.getElementById('background-music');
@@ -59,6 +65,11 @@ function init() {
     // Configurar audio
     setupAudio();
     
+    // Configurar pantalla completa si estaba activada
+    if (gameState.settings.fullscreen) {
+        setTimeout(enterFullscreen, 500);
+    }
+    
     // Simular carga de recursos
     setTimeout(() => {
         hideLoadingScreen();
@@ -77,6 +88,7 @@ function init() {
     }, 1500);
 }
 
+// Sistema de audio
 function setupAudio() {
     // Configurar volumen inicial
     updateAudioVolumes();
@@ -101,6 +113,11 @@ function setupEventListeners() {
     backFromSettingsBtn.addEventListener('click', showMainMenu);
     resetSettingsBtn.addEventListener('click', resetSettings);
     
+    // Controles de pantalla completa
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+    fullscreenGameBtn.addEventListener('click', toggleFullscreen);
+    fullscreenSettingsBtn.addEventListener('click', toggleFullscreen);
+    
     // Controles de audio
     musicToggleBtn.addEventListener('click', toggleMusic);
     musicToggleGameBtn.addEventListener('click', toggleMusic);
@@ -116,9 +133,57 @@ function setupEventListeners() {
     masterVolumeSlider.addEventListener('input', handleMasterVolumeChange);
     musicVolumeSlider.addEventListener('input', handleMusicVolumeChange);
     textSpeedSlider.addEventListener('input', handleTextSpeedChange);
+    
+    // Event listeners para cambios de pantalla completa
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
 }
 
-// Sistema de audio
+// Sistema de pantalla completa
+function toggleFullscreen() {
+    if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement) {
+        enterFullscreen();
+    } else {
+        exitFullscreen();
+    }
+}
+
+function enterFullscreen() {
+    const element = document.documentElement;
+    
+    if (element.requestFullscreen) {
+        element.requestFullscreen();
+    } else if (element.webkitRequestFullscreen) {
+        element.webkitRequestFullscreen();
+    } else if (element.mozRequestFullScreen) {
+        element.mozRequestFullScreen();
+    }
+    
+    gameState.settings.fullscreen = true;
+    saveSettings();
+}
+
+function exitFullscreen() {
+    if (document.exitFullscreen) {
+        document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+    } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+    }
+    
+    gameState.settings.fullscreen = false;
+    saveSettings();
+}
+
+function handleFullscreenChange() {
+    const isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement);
+    gameState.settings.fullscreen = isFullscreen;
+    saveSettings();
+}
+
+// Sistema de audio - Funciones principales
 function toggleMusic() {
     gameState.settings.musicEnabled = !gameState.settings.musicEnabled;
     
@@ -136,7 +201,7 @@ function toggleMusic() {
 
 function stopMusic() {
     backgroundMusic.pause();
-    backgroundMusic.currentTime = 0; // Reiniciar la música al principio
+    backgroundMusic.currentTime = 0;
 }
 
 function playMusic() {
@@ -256,7 +321,8 @@ function resetSettings() {
         masterVolume: 50,
         musicVolume: 50,
         textSpeed: 5,
-        musicEnabled: true
+        musicEnabled: true,
+        fullscreen: gameState.settings.fullscreen // Mantener estado de pantalla completa
     };
     
     updateAudioVolumes();
@@ -272,7 +338,6 @@ function resetSettings() {
     musicVolumeValue.textContent = `${gameState.settings.musicVolume}%`;
     textSpeedValue.textContent = 'Normal';
     
-    // Reiniciar música si estaba desactivada
     if (gameState.settings.musicEnabled) {
         backgroundMusic.play().catch(e => console.log('Error al reproducir música:', e));
     }
@@ -310,19 +375,14 @@ function showMainMenu() {
     });
     
     setTimeout(() => {
-        // Ocultar todas las pantallas excepto el menú principal
         gameScreen.classList.add('hidden');
         saveLoadScreen.classList.add('hidden');
         settingsScreen.classList.add('hidden');
         
-        // Mostrar menú principal con animación
         mainMenu.classList.remove('hidden');
         setTimeout(() => {
             mainMenu.classList.add('active');
-            
-            // Reproducir música cuando volvemos al menú principal
             playMusic();
-            
             isTransitioning = false;
         }, 50);
     }, 400);
@@ -332,29 +392,21 @@ function showGameScreen() {
     if (isTransitioning) return;
     isTransitioning = true;
     
-    // Ocultar pantalla actual con animación
     mainMenu.classList.remove('active');
     saveLoadScreen.classList.remove('active');
     settingsScreen.classList.remove('active');
     
     setTimeout(() => {
-        // Ocultar pantallas
         mainMenu.classList.add('hidden');
         saveLoadScreen.classList.add('hidden');
         settingsScreen.classList.add('hidden');
         
-        // Mostrar pantalla de juego
         gameScreen.classList.remove('hidden');
         setTimeout(() => {
             gameScreen.classList.add('active');
-            
-            // Re-configurar los event listeners de los botones de la UI del juego
             setupGameUIEventListeners();
-            updateMusicButtons(); // Actualizar estado del botón de música
-            
-            // Detener la música cuando iniciamos el juego
+            updateMusicButtons();
             stopMusic();
-            
             isTransitioning = false;
         }, 50);
     }, 400);
@@ -364,23 +416,18 @@ function showLoadScreen() {
     if (isTransitioning) return;
     isTransitioning = true;
     
-    // Ocultar pantalla actual con animación
     mainMenu.classList.remove('active');
     gameScreen.classList.remove('active');
     settingsScreen.classList.remove('active');
     
     setTimeout(() => {
-        // Ocultar pantallas
         mainMenu.classList.add('hidden');
         gameScreen.classList.add('hidden');
         settingsScreen.classList.add('hidden');
         
-        // Mostrar pantalla de carga/guardado
         saveLoadScreen.classList.remove('hidden');
         setTimeout(() => {
             saveLoadScreen.classList.add('active');
-            
-            // Actualizar las ranuras de guardado
             updateSaveSlots();
             isTransitioning = false;
         }, 50);
@@ -391,24 +438,18 @@ function showSaveScreen() {
     if (isTransitioning) return;
     isTransitioning = true;
     
-    // Ocultar pantalla actual con animación
     gameScreen.classList.remove('active');
     
     setTimeout(() => {
-        // Ocultar pantalla de juego
         gameScreen.classList.add('hidden');
         
-        // Mostrar pantalla de carga/guardado
         saveLoadScreen.classList.remove('hidden');
         setTimeout(() => {
             saveLoadScreen.classList.add('active');
-            
-            // Cambiar el título y comportamiento para guardar
             const screenTitle = document.querySelector('.screen-title');
             if (screenTitle) {
                 screenTitle.textContent = 'GUARDAR PARTIDA';
             }
-            
             updateSaveSlotsForSaving();
             isTransitioning = false;
         }, 50);
@@ -420,18 +461,12 @@ function setupGameUIEventListeners() {
     const saveBtn = document.getElementById('save-game-btn');
     const menuBtn = document.getElementById('open-menu-btn');
     const musicBtn = document.getElementById('music-toggle-game');
+    const fullscreenBtn = document.getElementById('fullscreen-btn-game');
     
-    if (saveBtn) {
-        saveBtn.onclick = showSaveScreen;
-    }
-    
-    if (menuBtn) {
-        menuBtn.onclick = showMainMenu;
-    }
-    
-    if (musicBtn) {
-        musicBtn.onclick = toggleMusic;
-    }
+    if (saveBtn) saveBtn.onclick = showSaveScreen;
+    if (menuBtn) menuBtn.onclick = showMainMenu;
+    if (musicBtn) musicBtn.onclick = toggleMusic;
+    if (fullscreenBtn) fullscreenBtn.onclick = toggleFullscreen;
 }
 
 // Funciones de juego
@@ -441,7 +476,6 @@ function startNewGame() {
     gameState.currentScene = gameData.startScene;
     showGameScreen();
     
-    // Pequeño delay para que se complete la animación
     setTimeout(() => {
         loadScene(gameState.currentScene);
         autoSave();
@@ -459,18 +493,13 @@ function loadScene(sceneId) {
         return;
     }
     
-    // Aplicar transición de escena
     sceneBackground.style.opacity = '0.7';
     sceneBackground.style.transform = 'scale(0.98)';
     
     setTimeout(() => {
-        // Actualizar el fondo
         sceneBackground.style.backgroundImage = `url('${scene.background}')`;
-        
-        // Limpiar elementos anteriores
         sceneBackground.innerHTML = '';
         
-        // Añadir personajes
         scene.characters.forEach(char => {
             if (char.image) {
                 const characterElement = document.createElement('img');
@@ -481,28 +510,23 @@ function loadScene(sceneId) {
             }
         });
         
-        // Añadir elementos interactivos
         scene.interactiveElements.forEach(element => {
             const interactiveElement = document.createElement('div');
             interactiveElement.classList.add('interactive-element');
             interactiveElement.textContent = element.name;
             interactiveElement.id = element.id;
             
-            // Posicionar el elemento
             Object.keys(element.position).forEach(prop => {
                 interactiveElement.style[prop] = element.position[prop];
             });
             
-            // Añadir evento de clic
             interactiveElement.addEventListener('click', () => {
                 if (isTransitioning) return;
                 
-                // Animación al hacer clic
                 interactiveElement.style.transform = 'scale(0.95)';
                 setTimeout(() => {
                     interactiveElement.style.transform = 'scale(1)';
                     
-                    // Cambiar de escena después de la animación
                     setTimeout(() => {
                         gameState.currentScene = element.nextScene;
                         loadScene(element.nextScene);
@@ -514,7 +538,6 @@ function loadScene(sceneId) {
             sceneBackground.appendChild(interactiveElement);
         });
         
-        // Actualizar texto con animación
         characterName.style.opacity = '0';
         dialogueText.style.opacity = '0';
         
@@ -526,12 +549,10 @@ function loadScene(sceneId) {
         
         dialogueText.textContent = scene.text;
         
-        // Completar transición
         setTimeout(() => {
             sceneBackground.style.opacity = '1';
             sceneBackground.style.transform = 'scale(1)';
             
-            // Animación del texto
             setTimeout(() => {
                 characterName.style.opacity = '1';
                 dialogueText.style.opacity = '1';
