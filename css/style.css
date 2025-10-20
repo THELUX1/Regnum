@@ -65,15 +65,67 @@ body {
 /* Menú inicial */
 #main-menu {
     background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), 
-                url('https://wallpapers.com/images/featured/fondods-de-horizonte-7fir6kqabih2ir2k.jpg');
+                url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
     background-size: cover;
     background-position: center;
     z-index: 10;
 }
 
+/* Header del menú principal */
+.menu-header {
+    position: absolute;
+    top: clamp(0.5rem, 2vh, 1rem);
+    right: clamp(0.5rem, 2vw, 1rem);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    z-index: 5;
+}
+
+/* Botón de pantalla completa */
+.fullscreen-btn {
+    background: rgba(10, 10, 18, 0.7);
+    border: 1px solid rgba(233, 69, 96, 0.5);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #e94560;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+}
+
+.fullscreen-btn:hover {
+    background: rgba(233, 69, 96, 0.2);
+    border-color: rgba(233, 69, 96, 0.8);
+    transform: scale(1.1);
+}
+
+/* Contenido del menú principal */
+.menu-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    width: 100%;
+    padding: 1rem;
+}
+
+.menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1rem, 3vh, 1.5rem);
+    width: 100%;
+    max-width: 300px;
+}
+
 .game-title {
     font-size: clamp(2rem, 8vw, 3.5rem);
-    margin-bottom: clamp(1.5rem, 6vh, 3rem);
+    margin-bottom: clamp(1rem, 4vh, 2rem);
     text-shadow: 0 0 15px rgba(233, 69, 96, 0.8);
     text-align: center;
     font-weight: 300;
@@ -82,24 +134,20 @@ body {
     opacity: 0;
     transform: translateY(-30px);
     animation: slideInFromTop 0.8s ease 0.3s forwards;
+    width: 100%;
 }
 
-.menu-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: clamp(1rem, 3vh, 1.5rem);
-}
-
+/* Botones responsivos - SIEMPRE en columna */
 .btn {
-    padding: clamp(0.6rem, 2vh, 0.8rem) clamp(1rem, 4vw, 1.5rem);
-    font-size: clamp(0.9rem, 4vw, 1rem);
+    padding: clamp(0.8rem, 3vh, 1rem) clamp(1.5rem, 4vw, 2rem);
+    font-size: clamp(1rem, 4vw, 1.2rem);
     background-color: transparent;
     color: white;
     border: 1px solid #e94560;
     border-radius: 2px;
     cursor: pointer;
     transition: all 0.3s ease;
-    min-width: clamp(150px, 40vw, 180px);
+    width: 100%;
     text-align: center;
     letter-spacing: 1px;
     opacity: 0;
@@ -114,6 +162,92 @@ body {
     background-color: #e94560;
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(233, 69, 96, 0.4);
+}
+
+/* Controles de música */
+.music-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.music-btn {
+    background: rgba(10, 10, 18, 0.7);
+    border: 1px solid rgba(233, 69, 96, 0.5);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #e94560;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+}
+
+.music-btn:hover {
+    background: rgba(233, 69, 96, 0.2);
+    border-color: rgba(233, 69, 96, 0.8);
+    transform: scale(1.1);
+}
+
+.music-btn.muted {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.volume-control {
+    background: rgba(10, 10, 18, 0.9);
+    padding: 0.8rem;
+    border-radius: 8px;
+    border: 1px solid rgba(233, 69, 96, 0.3);
+    backdrop-filter: blur(10px);
+    animation: fadeIn 0.3s ease;
+}
+
+.volume-slider {
+    width: 100px;
+    height: 4px;
+    -webkit-appearance: none;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    outline: none;
+}
+
+.volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #e94560;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.volume-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+.volume-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #e94560;
+    cursor: pointer;
+    border: none;
+}
+
+/* Botón de música en el juego */
+.music-btn-game {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #e94560;
+    transition: all 0.3s ease;
+}
+
+.music-btn-game.muted {
+    color: rgba(255, 255, 255, 0.5);
 }
 
 /* Pantalla de juego */
@@ -246,6 +380,15 @@ body {
     border-color: rgba(233, 69, 96, 0.8);
 }
 
+/* Botón de pantalla completa en el juego */
+#fullscreen-btn-game {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #e94560;
+    transition: all 0.3s ease;
+}
+
 /* Pantalla de guardado/carga */
 #save-load-screen {
     background-color: rgba(10, 10, 18, 0.95);
@@ -328,97 +471,6 @@ body {
     opacity: 0;
     animation: fadeIn 0.5s ease 0.8s forwards;
 }
-/* ... (mantener todos los estilos anteriores) ... */
-
-/* Controles de música */
-.music-controls {
-    position: absolute;
-    top: clamp(0.5rem, 2vh, 1rem);
-    right: clamp(0.5rem, 2vw, 1rem);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    z-index: 5;
-}
-
-.music-btn {
-    background: rgba(10, 10, 18, 0.7);
-    border: 1px solid rgba(233, 69, 96, 0.5);
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    color: #e94560;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(5px);
-}
-
-.music-btn:hover {
-    background: rgba(233, 69, 96, 0.2);
-    border-color: rgba(233, 69, 96, 0.8);
-    transform: scale(1.1);
-}
-
-.music-btn.muted {
-    color: rgba(255, 255, 255, 0.5);
-}
-
-.volume-control {
-    background: rgba(10, 10, 18, 0.9);
-    padding: 0.8rem;
-    border-radius: 8px;
-    border: 1px solid rgba(233, 69, 96, 0.3);
-    backdrop-filter: blur(10px);
-    animation: fadeIn 0.3s ease;
-}
-
-.volume-slider {
-    width: 100px;
-    height: 4px;
-    -webkit-appearance: none;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 2px;
-    outline: none;
-}
-
-.volume-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: #e94560;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.volume-slider::-webkit-slider-thumb:hover {
-    transform: scale(1.2);
-}
-
-.volume-slider::-moz-range-thumb {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: #e94560;
-    cursor: pointer;
-    border: none;
-}
-
-/* Botón de música en el juego */
-.music-btn-game {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #e94560;
-    transition: all 0.3s ease;
-}
-
-.music-btn-game.muted {
-    color: rgba(255, 255, 255, 0.5);
-}
 
 /* Pantalla de configuración */
 #settings-screen {
@@ -495,38 +547,6 @@ body {
     margin-top: 0.5rem;
 }
 
-/* Animaciones para controles de volumen */
-@keyframes slideInRight {
-    from {
-        opacity: 0;
-        transform: translateX(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-.volume-control.show {
-    display: block;
-    animation: slideInRight 0.3s ease;
-}
-
-/* Media queries para controles de música */
-@media (max-width: 768px) {
-    .music-btn {
-        width: 35px;
-        height: 35px;
-    }
-    
-    .volume-slider {
-        width: 80px;
-    }
-    
-    .settings-content {
-        width: 95vw;
-    }
-}
 /* Animaciones */
 @keyframes fadeIn {
     from { 
@@ -559,6 +579,23 @@ body {
     }
 }
 
+/* Animaciones para controles de volumen */
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.volume-control.show {
+    display: block;
+    animation: slideInRight 0.3s ease;
+}
+
 /* Efectos de transición entre escenas */
 .scene-transition-enter {
     opacity: 0;
@@ -571,28 +608,52 @@ body {
     transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
+/* Indicador de pantalla completa */
+body:fullscreen .fullscreen-btn,
+body:-webkit-full-screen .fullscreen-btn,
+body:-moz-full-screen .fullscreen-btn {
+    background: rgba(233, 69, 96, 0.3);
+    border-color: rgba(233, 69, 96, 0.8);
+}
+
+/* Asegurar que el juego ocupe toda la pantalla en modo pantalla completa */
+body:fullscreen #game-screen,
+body:-webkit-full-screen #game-screen,
+body:-moz-full-screen #game-screen {
+    width: 100vw;
+    height: 100vh;
+}
+
 /* Utilidades */
 .hidden {
     display: none !important;
 }
 
+.fade-out {
+    opacity: 0;
+}
+
 /* Media queries para orientación horizontal en móviles */
 @media (max-height: 600px) and (orientation: landscape) {
+    .menu-content {
+        padding: 0.5rem;
+        justify-content: flex-start;
+        margin-top: 3rem;
+    }
+    
     .game-title {
-        font-size: clamp(1.5rem, 6vh, 2rem);
-        margin-bottom: clamp(1rem, 4vh, 1.5rem);
+        font-size: clamp(1.8rem, 6vh, 2.5rem);
+        margin-bottom: clamp(1rem, 3vh, 1.5rem);
     }
     
     .menu-buttons {
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: clamp(0.5rem, 2vh, 1rem);
+        gap: clamp(0.8rem, 2vh, 1rem);
+        max-width: 280px;
     }
     
     .btn {
-        min-width: clamp(120px, 25vw, 140px);
-        padding: clamp(0.4rem, 1.5vh, 0.6rem) clamp(0.8rem, 3vw, 1rem);
+        padding: clamp(0.7rem, 2.5vh, 0.9rem) clamp(1.2rem, 3vw, 1.8rem);
+        font-size: clamp(0.9rem, 3.5vw, 1.1rem);
     }
     
     .text-container {
@@ -610,15 +671,45 @@ body {
     }
 }
 
-/* Para tablets y pantallas más grandes */
-@media (min-width: 768px) and (min-height: 600px) {
-    .save-slots {
-        grid-template-columns: repeat(3, 1fr);
+@media (max-height: 400px) and (orientation: landscape) {
+    .menu-content {
+        margin-top: 2rem;
     }
     
-    .interactive-element {
+    .game-title {
+        font-size: clamp(1.5rem, 5vh, 2rem);
+        margin-bottom: clamp(0.8rem, 2vh, 1rem);
+    }
+    
+    .menu-buttons {
+        gap: clamp(0.6rem, 1.5vh, 0.8rem);
+        max-width: 250px;
+    }
+    
+    .btn {
+        padding: clamp(0.6rem, 2vh, 0.8rem) clamp(1rem, 2.5vw, 1.5rem);
+        font-size: clamp(0.8rem, 3vw, 1rem);
+    }
+}
+
+/* Para pantallas muy pequeñas en vertical */
+@media (max-width: 320px) and (orientation: portrait) {
+    .menu-buttons {
+        max-width: 260px;
+    }
+    
+    .btn {
+        padding: 0.7rem 1.2rem;
         font-size: 0.9rem;
-        padding: 0.6rem;
+    }
+    
+    .music-btn, .fullscreen-btn {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .volume-slider {
+        width: 80px;
     }
 }
 
@@ -631,5 +722,167 @@ body {
     
     .character {
         height: 70%;
+    }
+    
+    .settings-content {
+        width: 95vw;
+    }
+}
+
+/* Para tablets y pantallas más grandes */
+@media (min-width: 768px) and (min-height: 600px) {
+    .menu-buttons {
+        max-width: 350px;
+    }
+    
+    .btn {
+        padding: 1rem 2rem;
+        font-size: 1.2rem;
+    }
+    
+    .game-title {
+        font-size: 4rem;
+        margin-bottom: 3rem;
+    }
+    
+    .save-slots {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .interactive-element {
+        font-size: 0.9rem;
+        padding: 0.6rem;
+    }
+}
+
+/* Ajustes específicos para pantallas muy grandes */
+@media (min-width: 1200px) and (min-height: 800px) {
+    .menu-buttons {
+        max-width: 400px;
+    }
+    
+    .btn {
+        padding: 1.2rem 2.5rem;
+        font-size: 1.3rem;
+    }
+    
+    .game-title {
+        font-size: 4.5rem;
+        margin-bottom: 4rem;
+    }
+}
+
+/* Soporte para navegadores antiguos */
+@supports not (backdrop-filter: blur(10px)) {
+    .text-container,
+    .music-btn,
+    .fullscreen-btn,
+    .ui-btn,
+    .save-slot,
+    .volume-control {
+        background-color: rgba(10, 10, 18, 0.95);
+    }
+    
+    .interactive-element {
+        background: rgba(233, 69, 96, 0.15);
+    }
+}
+
+/* Mejoras de accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Focus visible para mejor accesibilidad */
+.btn:focus-visible,
+.ui-btn:focus-visible,
+.music-btn:focus-visible,
+.fullscreen-btn:focus-visible {
+    outline: 2px solid #e94560;
+    outline-offset: 2px;
+}
+
+/* Scrollbar personalizado */
+.dialogue-text::-webkit-scrollbar {
+    width: 6px;
+}
+
+.dialogue-text::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+.dialogue-text::-webkit-scrollbar-thumb {
+    background: #e94560;
+    border-radius: 3px;
+}
+
+.dialogue-text::-webkit-scrollbar-thumb:hover {
+    background: #ff6b81;
+}
+
+/* Estados de carga mejorados */
+.loading-spinner::after {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    border: 4px solid transparent;
+    border-top: 4px solid rgba(233, 69, 96, 0.1);
+    border-radius: 50%;
+    animation: spin 1.5s linear infinite reverse;
+}
+
+/* Efectos de hover suaves */
+@media (hover: hover) {
+    .btn:hover,
+    .ui-btn:hover,
+    .music-btn:hover,
+    .fullscreen-btn:hover {
+        transform: translateY(-2px);
+        transition: all 0.2s ease;
+    }
+}
+
+/* Mejoras de rendimiento para dispositivos táctiles */
+@media (pointer: coarse) {
+    .interactive-element {
+        min-width: 70px;
+        min-height: 50px;
+    }
+    
+    .btn,
+    .ui-btn {
+        padding: 1rem 1.5rem;
+    }
+}
+
+/* Soporte para modo oscuro del sistema */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #0a0a12;
+    }
+}
+
+/* Impresión */
+@media print {
+    .screen:not(#game-screen) {
+        display: none !important;
+    }
+    
+    #game-screen {
+        position: static;
+        opacity: 1;
+        transform: none;
+    }
+    
+    .game-ui {
+        display: none;
     }
 }
