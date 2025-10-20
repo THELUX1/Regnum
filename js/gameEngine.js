@@ -568,13 +568,21 @@ function loadScene(sceneId) {
 function autoSave() {
     const currentScene = gameData.scenes[gameState.currentScene];
     if (currentScene) {
-        gameState.saveSlots[0] = {
-            scene: gameState.currentScene,
-            timestamp: new Date().toLocaleString(),
-            preview: currentScene.text.substring(0, 50) + '...'
-        };
+        // Solo guardar automáticamente si el slot 0 está vacío o es un auto-guardado viejo
+        const shouldAutoSave = !gameState.saveSlots[0] || 
+                              (gameState.saveSlots[0] && 
+                               Date.now() - new Date(gameState.saveSlots[0].timestamp).getTime() > 300000); // 5 minutos
         
-        localStorage.setItem('visualNovelSave', JSON.stringify(gameState));
+        if (shouldAutoSave) {
+            gameState.saveSlots[0] = {
+                scene: gameState.currentScene,
+                timestamp: new Date().toLocaleString(),
+                preview: currentScene.text.substring(0, 50) + '...',
+                isAutoSave: true // Marcar como auto-guardado
+            };
+            
+            localStorage.setItem('visualNovelSave', JSON.stringify(gameState));
+        }
     }
 }
 
@@ -595,7 +603,8 @@ function manualSave(slotIndex) {
             slotElements[slotIndex].style.backgroundColor = 'rgba(233, 69, 96, 0.3)';
             setTimeout(() => {
                 slotElements[slotIndex].style.backgroundColor = '';
-                showMainMenu();
+                // REMOVÍ: showMainMenu(); // Esto es lo que hacía volver al menú principal
+                showGameScreen(); // En su lugar, volvemos al juego
             }, 600);
         }
     }
@@ -651,8 +660,9 @@ function updateSaveSlotsForSaving() {
         slotElement.classList.add('save-slot');
         
         if (slot) {
+            const saveType = slot.isAutoSave ? ' (Auto)' : ' (Manual)';
             slotElement.innerHTML = `
-                <div class="slot-title">Partida ${index + 1}</div>
+                <div class="slot-title">Partida ${index + 1}${saveType}</div>
                 <div class="slot-info">${slot.timestamp}</div>
                 <div class="slot-info">${slot.preview}</div>
                 <div class="slot-info">Haz clic para sobreescribir</div>
